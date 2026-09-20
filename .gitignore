@@ -1,0 +1,4 @@
+# Arquivos de empacotamento e temporarios
+*.zip
+.DS_Store
+Thumbs.db
