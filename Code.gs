@@ -10,6 +10,10 @@ var SHEET_ID = '1TX0c0C5trW-dFZ8B3Eke_euca_CeBMBZj_Zc5Ul3Oo0';
 
 var MAX_TEXTO = 200;
 
+// Horário de Brasília. A coluna Data/Hora é exibida neste fuso, independente da configuração da planilha.
+var TIMEZONE = 'America/Sao_Paulo';
+var FORMATO_DATA = 'dd/MM/yyyy HH:mm:ss';
+
 var HEADERS = [
   'Data/Hora',
   'Nome Completo',
@@ -40,7 +44,9 @@ function doPost(e) {
       return jsonResponse({ status: 'error', message: 'Dados inválidos ou incompletos.' });
     }
 
-    getSheet().appendRow([new Date(), nome, instituicao, moeda, breve, totem]);
+    var sheet = getSheet();
+    sheet.appendRow([new Date(), nome, instituicao, moeda, breve, totem]);
+    sheet.getRange(sheet.getLastRow(), 1).setNumberFormat(FORMATO_DATA);
 
     return jsonResponse({ status: 'ok' });
 
@@ -57,7 +63,11 @@ function doGet() {
 }
 
 function getSheet() {
-  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  if (ss.getSpreadsheetTimeZone() !== TIMEZONE) {
+    ss.setSpreadsheetTimeZone(TIMEZONE);
+  }
+  var sheet = ss.getSheets()[0];
 
   var firstRow = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
   if (firstRow.join('') === '') {
