@@ -20,7 +20,8 @@ var HEADERS = [
   'Instituição',
   'Quantidade de Moeda',
   'Quantidade de Brevê Metálico',
-  'Quantidade de Totem'
+  'Quantidade de Totem',
+  'Quantidade de Brevê Emborrachado'
 ];
 
 function doPost(e) {
@@ -38,14 +39,15 @@ function doPost(e) {
     var instituicao = cleanText(data.instituicao);
     var moeda = toNonNegativeInt(data.quantidadeMoeda);
     var breve = toNonNegativeInt(data.quantidadeBreveMetalico);
+    var breveEmborrachado = toNonNegativeInt(data.quantidadeBreveEmborrachado);
     var totem = toNonNegativeInt(data.quantidadeTotem);
 
-    if (!nome || !instituicao || moeda === null || breve === null || totem === null) {
+    if (!nome || !instituicao || moeda === null || breve === null || breveEmborrachado === null || totem === null) {
       return jsonResponse({ status: 'error', message: 'Dados inválidos ou incompletos.' });
     }
 
     var sheet = getSheet();
-    sheet.appendRow([new Date(), nome, instituicao, moeda, breve, totem]);
+    sheet.appendRow([new Date(), nome, instituicao, moeda, breve, totem, breveEmborrachado]);
     sheet.getRange(sheet.getLastRow(), 1).setNumberFormat(FORMATO_DATA);
 
     return jsonResponse({ status: 'ok' });
@@ -71,8 +73,17 @@ function getSheet() {
 
   var firstRow = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
   if (firstRow.join('') === '') {
+    // Planilha nova: grava o cabeçalho inteiro.
     sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold');
     sheet.setFrozenRows(1);
+  } else {
+    // Planilha já existente: completa colunas de cabeçalho que faltarem no final
+    // (ex.: um campo novo adicionado depois que a planilha já tinha registros).
+    var existentes = firstRow.filter(function (v) { return v !== ''; }).length;
+    if (existentes < HEADERS.length) {
+      var faltando = HEADERS.slice(existentes);
+      sheet.getRange(1, existentes + 1, 1, faltando.length).setValues([faltando]).setFontWeight('bold');
+    }
   }
 
   return sheet;

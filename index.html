@@ -22,6 +22,7 @@
       --tone-1: #0284c7;
       --tone-2: #4f46e5;
       --tone-3: #0891b2;
+      --tone-4: #b45309;
       --shadow: 0 2px 4px rgb(15 31 61 / 0.06), 0 20px 45px rgb(30 58 138 / 0.18);
       --ok-bg: #e3f6ec;
       --ok-text: #14532d;
@@ -46,6 +47,7 @@
         --tone-1: #38bdf8;
         --tone-2: #818cf8;
         --tone-3: #22d3ee;
+        --tone-4: #fbbf24;
         --shadow: 0 2px 4px rgb(0 0 0 / 0.4), 0 20px 45px rgb(0 0 0 / 0.45);
         --ok-bg: #11301f;
         --ok-text: #b7e4c7;
@@ -134,6 +136,7 @@
     .grid .field:nth-child(1) { --tone: var(--tone-1); }
     .grid .field:nth-child(2) { --tone: var(--tone-2); }
     .grid .field:nth-child(3) { --tone: var(--tone-3); }
+    .grid .field:nth-child(4) { --tone: var(--tone-4); }
 
     label {
       display: flex;
@@ -250,6 +253,11 @@
         </div>
 
         <div class="field">
+          <label for="brevesEmborrachados">Brevês emborrachados</label>
+          <input type="number" id="brevesEmborrachados" min="0" step="1" inputmode="numeric" placeholder="0" required>
+        </div>
+
+        <div class="field">
           <label for="totens">Totens</label>
           <input type="number" id="totens" min="0" step="1" inputmode="numeric" placeholder="0" required>
         </div>
@@ -266,7 +274,7 @@
     var ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbzaLvEhsg3Ynw-FFfy_Bo_6eDRnJa6MShndzakygUVuBT_Qzql0jl2_3-RVzzDt-ct8/exec';
     // ---- FIM DA CONFIGURAÇÃO ----
 
-    var FIELDS = ['nome', 'instituicao', 'moedas', 'breves', 'totens'];
+    var FIELDS = ['nome', 'instituicao', 'moedas', 'breves', 'brevesEmborrachados', 'totens'];
 
     var form = document.getElementById('form');
     var btn = document.getElementById('enviar');
@@ -293,7 +301,7 @@
         showMessage('Preencha o nome completo e a instituição.', 'err');
         return;
       }
-      if (!isNonNegativeInt(v.moedas) || !isNonNegativeInt(v.breves) || !isNonNegativeInt(v.totens)) {
+      if (!isNonNegativeInt(v.moedas) || !isNonNegativeInt(v.breves) || !isNonNegativeInt(v.brevesEmborrachados) || !isNonNegativeInt(v.totens)) {
         showMessage('As quantidades devem ser números inteiros, iguais ou maiores que 0.', 'err');
         return;
       }
@@ -307,6 +315,7 @@
         instituicao: v.instituicao.trim(),
         quantidadeMoeda: Number(v.moedas),
         quantidadeBreveMetalico: Number(v.breves),
+        quantidadeBreveEmborrachado: Number(v.brevesEmborrachados),
         quantidadeTotem: Number(v.totens)
       };
 
